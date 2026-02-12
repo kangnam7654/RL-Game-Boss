@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+models/
+!models/.gitkeep
+tb_logs/
+*.egg-info/
+.eggs/
+dist/
+build/
