@@ -1,0 +1,11 @@
+[project]
+name = "rl-game-boss"
+version = "0.1.0"
+description = "Top-down action game with PPO reinforcement learning boss AI"
+requires-python = ">=3.10"
+dependencies = [
+    "pygame>=2.5.0",
+    "gymnasium>=0.29.0",
+    "stable-baselines3>=2.1.0",
+    "tensorboard>=2.14.0",
+]
