@@ -12,10 +12,16 @@ if PROJECT_ROOT not in sys.path:
 def main():
     parser = argparse.ArgumentParser(
         description='Boss AI - Top-Down Action Game with Reinforcement Learning')
-    parser.add_argument('mode', choices=['train', 'play', 'eval'],
-                        help='실행 모드: train(학습), play(플레이), eval(평가)')
+    parser.add_argument('mode',
+                        choices=['train', 'play', 'eval',
+                                 'train-player', 'co-train', 'watch'],
+                        help='실행 모드')
     parser.add_argument('--model', type=str, default='models/best/best_model.zip',
                         help='학습된 모델 경로 (play/eval 모드)')
+    parser.add_argument('--boss-model', type=str, default=None,
+                        help='보스 모델 경로 (train-player/watch)')
+    parser.add_argument('--player-model', type=str, default=None,
+                        help='플레이어 모델 경로 (watch)')
     parser.add_argument('--timesteps', type=int, default=2_000_000,
                         help='학습 총 타임스텝')
     parser.add_argument('--difficulty', choices=['easy', 'medium', 'hard'],
@@ -24,6 +30,10 @@ def main():
                         help='병렬 환경 수')
     parser.add_argument('--resume', type=str, default=None,
                         help='학습 재개 시 모델 경로')
+    parser.add_argument('--target-winrate', type=float, default=0.5,
+                        help='co-train 목표 클리어율 (0.0~1.0)')
+    parser.add_argument('--rounds', type=int, default=5,
+                        help='co-train 라운드 수')
     args = parser.parse_args()
 
     if args.mode == 'train':
@@ -41,6 +51,33 @@ def main():
 
     elif args.mode == 'eval':
         _run_eval(args.model)
+
+    elif args.mode == 'train-player':
+        from ai.co_train import train_player
+        boss_path = args.boss_model or 'models/best/best_model.zip'
+        train_player(
+            boss_model_path=boss_path,
+            timesteps=args.timesteps,
+            n_envs=args.n_envs,
+            resume_path=args.resume,
+        )
+
+    elif args.mode == 'co-train':
+        from ai.co_train import co_train
+        boss_path = args.boss_model or 'models/best/best_model.zip'
+        co_train(
+            target_winrate=args.target_winrate,
+            rounds=args.rounds,
+            steps_per_round=args.timesteps,
+            n_envs=args.n_envs,
+            initial_boss_path=boss_path,
+        )
+
+    elif args.mode == 'watch':
+        from modes.watch_mode import WatchMode
+        boss_path = args.boss_model or 'models/best/best_model.zip'
+        player_path = args.player_model or 'models/player/player_latest.zip'
+        WatchMode(boss_model_path=boss_path, player_model_path=player_path).run()
 
 
 def _run_eval(model_path: str):

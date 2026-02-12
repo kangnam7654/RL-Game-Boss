@@ -23,8 +23,12 @@ BOSS_SPEED = 2.5
 BOSS_HITBOX_RADIUS = 24.0
 PHASE_THRESHOLDS = [0.75, 0.50, 0.25]  # HP 비율 기준 페이즈 전환
 
-# --- RL ---
+# --- RL (Boss) ---
 MAX_EPISODE_STEPS = 3000
 OBSERVATION_DIM = 28
 NUM_BOSS_ACTIONS = 16
 ACTION_REPEAT = 5  # 보스 의사결정 주기 (프레임)
+
+# --- RL (Player) ---
+PLAYER_OBS_DIM = 32
+PLAYER_ACTION_REPEAT = 3  # 플레이어 의사결정 주기 (보스보다 빠르게)

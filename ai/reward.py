@@ -56,7 +56,8 @@ def _entropy(actions: list[int], n_actions: int = NUM_BOSS_ACTIONS) -> float:
     return ent / max_ent
 
 
-def compute_reward(acc: RewardAccumulator, recent_actions: list[int]) -> float:
+def compute_reward(acc: RewardAccumulator, recent_actions: list[int],
+                    kill_reward_coef: float = 1.0) -> float:
     reward = 0.0
 
     # ──────────────────────────────────────
@@ -65,11 +66,11 @@ def compute_reward(acc: RewardAccumulator, recent_actions: list[int]) -> float:
     reward += acc.damage_dealt * 0.01       # 기존 0.02 → 0.01
     reward -= acc.damage_taken * 0.01       # 기존 0.015 → 0.01
 
-    # 승리/패배 (대폭 감소 - 킬 자체보다 과정이 중요)
+    # 승리/패배 (λ = kill_reward_coef로 조절, co-train 시 적응)
     if acc.player_killed:
-        reward += 1.0   # 기존 5.0 → 1.0
+        reward += kill_reward_coef * 1.0
     if acc.boss_died:
-        reward -= 1.0   # 기존 5.0 → 1.0
+        reward -= kill_reward_coef * 1.0
 
     # ──────────────────────────────────────
     # 2. 긴장감 유지 보상 (Tension Sweet Spot)
