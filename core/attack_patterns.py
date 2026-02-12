@@ -237,7 +237,7 @@ def _exec_laser_beam(world: GameWorld, boss: Boss, player: Player):
         'y1': boss.transform.y,
         'angle': angle,
         'length': beam_length,
-        'aim_delay': 30,
+        'delay': 30,
         'fire_duration': 40,
         'damage': 18 if not boss.enraged else 25,
         'owner_id': boss.id,
